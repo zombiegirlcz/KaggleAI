@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "KaggleAI",
+    "slug": "kaggle-ai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./public/favicon.svg",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      },
+      "package": "com.zombiegirl.kaggleai"
+    },
+    "web": {
+      "favicon": "./public/favicon.svg",
+      "bundler": "vite"
+    }
+  }
+}
