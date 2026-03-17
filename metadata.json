@@ -1,0 +1,7 @@
+{
+  "name": "KaggleAI Automatizátor",
+  "description": "Mobilní AI automatizace pro Kaggle a Colab notebooky. Sledujte trénování, spravujte datasety a automatizujte workflow pomocí Gemini.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

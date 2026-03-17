@@ -1,0 +1,97 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and settings",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "kaggleUsername": { "type": "string" },
+        "kaggleApiKey": { "type": "string", "description": "Encrypted or sensitive Kaggle API key" },
+        "colabToken": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Notebook": {
+      "title": "Notebook",
+      "description": "Kaggle or Colab notebook automation state",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "platform": { "type": "string", "enum": ["kaggle", "colab"] },
+        "status": { "type": "string", "enum": ["idle", "running", "error", "completed"] },
+        "lastLoss": { "type": "number" },
+        "progress": { "type": "number" },
+        "autoSaveEnabled": { "type": "boolean" },
+        "lastAutoSave": { "type": "string", "format": "date-time" },
+        "config": { "type": "object", "description": "AI automation instructions" },
+        "gpuEnabled": { "type": "boolean" },
+        "gpuType": { "type": "string", "enum": ["T4", "P100", "V100", "TPU"] },
+        "gpuCount": { "type": "integer" },
+        "internetEnabled": { "type": "boolean" },
+        "venv": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["none", "venv", "conda"] },
+            "name": { "type": "string" }
+          }
+        }
+      },
+      "required": ["userId", "name", "platform"]
+    },
+    "TrainingLog": {
+      "title": "Training Log",
+      "description": "Real-time metrics from the notebook",
+      "type": "object",
+      "properties": {
+        "notebookId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "loss": { "type": "number" },
+        "accuracy": { "type": "number" },
+        "epoch": { "type": "integer" },
+        "message": { "type": "string" }
+      },
+      "required": ["notebookId", "timestamp"]
+    },
+    "Model": {
+      "title": "Model",
+      "description": "Machine learning model metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "framework": { "type": "string", "enum": ["pytorch", "tensorflow", "jax", "other"] },
+        "isPublic": { "type": "boolean" },
+        "fileUrl": { "type": "string" },
+        "size": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["userId", "name"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/notebooks/{notebookId}": {
+      "schema": "Notebook",
+      "description": "Active notebooks"
+    },
+    "/notebooks/{notebookId}/logs/{logId}": {
+      "schema": "TrainingLog",
+      "description": "Training metrics"
+    },
+    "/models/{modelId}": {
+      "schema": "Model",
+      "description": "Stored models"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: users
+    // Fields: uid, email, displayName, kaggleUsername, kaggleApiKey, colabToken
+    //
+    // Collection: notebooks
+    // Fields: id, userId, name, platform, status, lastLoss, progress, autoSaveEnabled, lastAutoSave, config
+    //
+    // Collection: notebooks/{notebookId}/logs
+    // Fields: notebookId, timestamp, loss, accuracy, epoch, message
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid is string &&
+             data.email is string;
+    }
+
+    function isValidNotebook(data) {
+      return data.keys().hasAll(['userId', 'name', 'platform']) &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() < 100 &&
+             data.platform in ['kaggle', 'colab'];
+    }
+
+    function isValidLog(data) {
+      return data.keys().hasAll(['notebookId', 'timestamp']) &&
+             data.notebookId is string &&
+             data.timestamp is timestamp;
+    }
+
+    function isValidModel(data) {
+      return data.keys().hasAll(['userId', 'name']) &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() < 100;
+    }
+
+    function isValidDataset(data) {
+      return data.keys().hasAll(['userId', 'name', 'format']) &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() < 100 &&
+             data.format is string;
+    }
+
+    function isValidCollection(data) {
+      return data.keys().hasAll(['userId', 'name', 'datasetIds']) &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() < 100 &&
+             data.datasetIds is list;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidUser(request.resource.data);
+    }
+
+    match /datasets/{datasetId} {
+      allow read: if isAuthenticated() && (resource.data.isPublic == true || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidDataset(request.resource.data);
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    match /collections/{collectionId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && isValidCollection(request.resource.data);
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    match /models/{modelId} {
+      allow read: if isAuthenticated() && (resource.data.isPublic == true || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidModel(request.resource.data);
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && isValidModel(request.resource.data);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    match /notebooks/{notebookId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidNotebook(request.resource.data);
+      allow update: if isAuthenticated() && isDocOwner() && isValidNotebook(request.resource.data);
+      allow delete: if isAuthenticated() && isDocOwner();
+
+      match /logs/{logId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && isValidLog(request.resource.data);
+      }
+    }
+    
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}
