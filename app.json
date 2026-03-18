@@ -2,10 +2,9 @@
   "expo": {
     "name": "KaggleAI",
     "slug": "kaggle-ai",
-    "sdkVersion": "55.0.0",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./public/icon.png",
+    "icon": "./public/favicon.svg",
     "userInterfaceStyle": "dark",
     "splash": {
       "resizeMode": "contain",
@@ -14,9 +13,13 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.zombiegirl.kaggleai"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -25,13 +28,8 @@
       "package": "com.zombiegirl.kaggleai"
     },
     "web": {
-      "favicon": "./public/favicon.ico",
-      "bundler": "vite"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "47fd12a0-a3ca-4dc6-9d40-7c5ef3d9598e"
-      }
+      "favicon": "./public/favicon.svg",
+      "bundler": "metro"
     }
   }
 }
