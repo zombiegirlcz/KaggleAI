@@ -6,3 +6,11 @@ coverage/
 *.log
 .env*
 !.env.example
+android.bak/
+ios.bak/
+.expo/
+hermes/
+.gradle/
+*.keystore
+android/
+ios/

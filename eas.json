@@ -1,0 +1,20 @@
+{
+  "cli": {
+    "version": ">= 1.0.0"
+  },
+  "build": {
+    "preview": {
+      "workflow": "managed",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "release": {
+      "workflow": "managed",
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}
